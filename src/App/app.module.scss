@@ -1,0 +1,69 @@
+body span {
+  font-size: calc(1vh + 1vw);
+}
+body p {
+  font-size: calc(2vh + 2vw);
+}
+.data {
+  visibility: visible;
+  position: absolute;
+  top: 1vh;
+  right: 5vw;
+  z-index: 20;
+  font-weight: bold;
+}
+.up::after {
+  content: ' 🠕';
+}
+.down::after {
+  content: ' 🠗';
+}
+.hmm {
+  width: fit-content;
+  font-size: calc(1vh + 1vw);
+  position: relative;
+  cursor: pointer;
+}
+.hmm:hover {
+  font-weight: bold;
+}
+.hmm:hover .tooltip {
+  visibility: visible;
+}
+.hmm:hover .data {
+  visibility: hidden;
+}
+.tooltip {
+  position: absolute;
+  visibility: hidden;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  width: fit-content;
+  height: fit-content;
+  background-color: rgb(216, 216, 216);
+  border-radius: 1vh;
+  top: 0vh;
+  left: 25vw;
+}
+.tooltip::after {
+  content: '';
+  position: absolute;
+  border: calc(0.5vh + 0.5vw) solid transparent;
+  border-right: calc(0.9vh + 0.9vw) solid rgb(216, 216, 216);
+  top: calc(0.1vh + 0.1vw);
+  left: calc(-1.35vw - 1.35vh);
+}
+@media (orientation: portrait) {
+  .tooltip {
+    left: calc(15vw + 15vh);
+  }
+  .tooltip::after {
+    left: calc(-1.2vw - 1.2vh);
+  }
+  .data {
+    font-size: calc(1vh + 1vw);
+    top: 2vh;
+    right: 2vw;
+    width: 50vw;
+  }
+}

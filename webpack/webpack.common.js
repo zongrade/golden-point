@@ -2,7 +2,6 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
-
 module.exports = {
   mode: 'development',
   devtool: 'source-map',
@@ -14,7 +13,7 @@ module.exports = {
     filename: '[name].[fullhash].js',
     path: path.resolve(__dirname, '../docs'),
     clean: true,
-    publicPath: './',
+    publicPath: process.env.NODE_ENV == 'prod' ? './' : '/',
   },
   plugins: [
     new HtmlWebpackPlugin({

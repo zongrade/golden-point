@@ -199,7 +199,13 @@ const App = () => {
                 onMouseLeave={() => setShowDate(true)}
                 onClick={() => setShowDate(false)}
               >
-                <ul>
+                <ul
+                  style={{
+                    background: 'linear-gradient(lightblue,pink,lightgreen)',
+                    paddingRight: '2vw',
+                    borderRadius: 'calc(1vw + 1vh)',
+                  }}
+                >
                   <li>
                     <span>
                       {currentCourses.Valute

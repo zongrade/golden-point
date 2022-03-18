@@ -138,9 +138,50 @@ const App = () => {
         return 'ru'
     }
   }
+  // TODO:сделать вывод 10 дней иформации о конкретной валюте
+  async function getSmth() {
+    if (
+      localStorage.getItem('coursesByTen') &&
+      localStorage.getItem('coursesByTenDate') &&
+      JSON.parse(localStorage.getItem('coursesByTenDate') || '0') - Date.now() <
+        8.64 * 10 ** 7
+    ) {
+      return JSON.parse(localStorage.getItem('coursesByTen') || '{}')
+    }
+    let dateNow = Date.now()
+    function getDate() {
+      const [day, month, year] = new Date(dateNow)
+        .toLocaleDateString()
+        .split('.')
+      dateNow = dateNow - 8.64 * 10 ** 7 - 1
+      return [year, month, day]
+    }
+    function getUrlStringByDate([year, month, day]: string[]): string {
+      return `https://www.cbr-xml-daily.ru/archive/${year}/${month}/${day}/daily_json.js`
+    }
+    async function getData(url: string) {
+      try {
+        const response = await fetch(url)
+        const data = await response.json()
+        return data
+      } catch (error) {
+        return { message: 'no Data' }
+      }
+    }
+    const exArr = new Array(10)
+      .fill('')
+      .map((item) => (item = getUrlStringByDate(getDate())))
+    const coursesByTen = await Promise.allSettled(exArr.map(getData))
+    localStorage.setItem('coursesByTen', JSON.stringify(coursesByTen))
+    localStorage.setItem('coursesByTenDate', JSON.stringify(dateNow))
+    return coursesByTen
+  }
   const [first, setFirst] = useState(
     JSON.parse(localStorage.getItem('first') || 'true')
   )
+  const [coursesTen, setCoursesTen] = useState<
+    { date: string; value: number }[]
+  >([])
   const [showDate, setShowDate] = useState(true)
   const [currentDate, setCurrentDate] = useState(
     localStorage.getItem('courseDate') || '0'
@@ -197,13 +238,38 @@ const App = () => {
                 className={classes.hmm}
                 onMouseEnter={() => setShowDate(false)}
                 onMouseLeave={() => setShowDate(true)}
-                onClick={() => setShowDate(false)}
+                onClick={(e) => setShowDate(false)}
               >
                 <ul
                   style={{
                     background: 'linear-gradient(lightblue,pink,lightgreen)',
                     paddingRight: '2vw',
                     borderRadius: 'calc(1vw + 1vh)',
+                  }}
+                  onClick={(e) => {
+                    const codeValute =
+                      e.target.nodeName == 'UL'
+                        ? e.nativeEvent.path[0].children[0].innerText
+                        : e.target.nodeName == 'LI'
+                        ? e.nativeEvent.path[1].children[0].innerText
+                        : e.nativeEvent.path[2].children[0].innerText
+                    getSmth().then((r) => {
+                      let dat: string | number | Date
+                      const arrObj = r.map(
+                        (item: { status: 'fulfilled'; value: Tcourses }) => {
+                          dat = new Date(item.value.Date || dat || Date())
+                          const obj = !item.value.hasOwnProperty('message')
+                            ? {
+                                date: dat,
+                                value: item.value.Valute[codeValute].Value,
+                              }
+                            : { date: dat, value: 'no info' }
+                          dat = new Date(dat.getTime() - 8.64 * 10 ** 7)
+                          return obj
+                        }
+                      )
+                      setCoursesTen(arrObj)
+                    })
                   }}
                 >
                   <li>
@@ -268,6 +334,31 @@ const App = () => {
           <div>no course</div>
         )}
       </div>
+      {coursesTen && (
+        <div
+          style={{
+            position: 'fixed',
+            right: '0vw',
+            top: '10vh',
+            fontSize: 'calc(1vh + 1vw)',
+          }}
+        >
+          {coursesTen.map((item) => (
+            <div
+              key={item.date}
+              style={{
+                right: '12vw',
+                height: '8vh',
+                width: '50vw',
+                borderBottom: '1px solid black',
+              }}
+            >
+              <div id={'' + item.value}>цена - {item.value}</div>
+              <label htmlFor={'' + item.value}>{'' + item.date}</label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   ) : (
     <div>
@@ -276,6 +367,7 @@ const App = () => {
         полное наименование валюты
       </p>
       <p>На пк наведите, чтобы увидеть полное наименование валюты</p>
+      <p>Клик приводит к выводу данных за 10 дней</p>
       <p>
         Данные получаются, если с момента последнего получения данных прошло
         больше часа

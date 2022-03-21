@@ -1,5 +1,4 @@
-import { number } from 'prop-types'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classes from './app.module.scss'
 type valute = {
   CharCode: string
@@ -138,7 +137,6 @@ const App = () => {
         return 'ru'
     }
   }
-  // TODO:сделать вывод 10 дней иформации о конкретной валюте
   async function getSmth() {
     if (
       localStorage.getItem('coursesByTen') &&
@@ -246,24 +244,25 @@ const App = () => {
                     paddingRight: '2vw',
                     borderRadius: 'calc(1vw + 1vh)',
                   }}
-                  onClick={(e) => {
-                    const codeValute =
+                  onClick={(e: React.MouseEvent<HTMLElement>) => {
+                    const codeValute: countryTag =
                       e.target.nodeName == 'UL'
                         ? e.nativeEvent.path[0].children[0].innerText
                         : e.target.nodeName == 'LI'
                         ? e.nativeEvent.path[1].children[0].innerText
                         : e.nativeEvent.path[2].children[0].innerText
                     getSmth().then((r) => {
-                      let dat: string | number | Date
+                      let dat: Date
                       const arrObj = r.map(
                         (item: { status: 'fulfilled'; value: Tcourses }) => {
                           dat = new Date(item.value.Date || dat || Date())
-                          const obj = !item.value.hasOwnProperty('message')
-                            ? {
-                                date: dat,
-                                value: item.value.Valute[codeValute].Value,
-                              }
-                            : { date: dat, value: 'no info' }
+                          const obj: { date: Date; value: string | number } =
+                            !item.value.hasOwnProperty('message')
+                              ? {
+                                  date: dat,
+                                  value: item.value.Valute[codeValute].Value,
+                                }
+                              : { date: dat, value: 'no info' }
                           dat = new Date(dat.getTime() - 8.64 * 10 ** 7)
                           return obj
                         }

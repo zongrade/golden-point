@@ -245,12 +245,8 @@ const App = () => {
                     borderRadius: 'calc(1vw + 1vh)',
                   }}
                   onClick={(e: React.MouseEvent<HTMLElement>) => {
-                    const codeValute: countryTag =
-                      e.target.nodeName == 'UL'
-                        ? e.nativeEvent.path[0].children[0].innerText
-                        : e.target.nodeName == 'LI'
-                        ? e.nativeEvent.path[1].children[0].innerText
-                        : e.nativeEvent.path[2].children[0].innerText
+                    const codeValute: countryTag = currentCourses.Valute[elem]
+                      .CharCode as countryTag
                     getSmth().then((r) => {
                       let dat: Date
                       const arrObj = r.map(

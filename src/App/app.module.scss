@@ -23,10 +23,10 @@ body p {
   font-weight: bold;
 }
 .up::after {
-  content: ' 🠕';
+  content: ' \2191';
 }
 .down::after {
-  content: ' 🠗';
+  content: ' \2193';
 }
 .hmm {
   width: fit-content;
